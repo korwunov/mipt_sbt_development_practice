@@ -1,0 +1,30 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: archive-logs-cronjob
+spec:
+  schedule: "*/1 * * * *"   # раз в минуту для демонстрации
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: log-archiver
+            image: curlimages/curl
+            command:
+            - /bin/sh
+            - -c
+            - |
+              TIMESTAMP=$(date -u +"%Y%m%d_%H%M%S")
+              LOG_URL="http://python-flask-app-service/logs"
+              curl -s "$LOG_URL" --output /tmp/raw-logs-$TIMESTAMP.txt
+              cd /tmp
+              tar -czf app-logs-$TIMESTAMP.tar.gz raw-logs-$TIMESTAMP.txt
+              echo "Archived logs to /tmp/app-logs-$TIMESTAMP.tar.gz"
+            volumeMounts:
+            - name: tmp-storage
+              mountPath: /tmp
+          restartPolicy: OnFailure
+          volumes:
+          - name: tmp-storage
+            emptyDir: {}

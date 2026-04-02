@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: log-agent-daemonset
+spec:
+  selector:
+    matchLabels:
+      name: log-agent
+  template:
+    metadata:
+      labels:
+        name: log-agent
+    spec:
+      containers:
+      - name: log-agent
+        image: busybox:1.35
+        command: ["/bin/sh", "-c"]
+        args:
+        - >
+          while true; do
+            if [ -f /var/log/app-logs/app.log ]; then
+              tail -f /var/log/app-logs/app.log;
+            else
+              echo "Log file not found, waiting...";
+              sleep 5;
+            fi
+          done
+        volumeMounts:
+        - name: app-logs
+          mountPath: /var/log/app-logs
+          readOnly: true
+      volumes:
+      - name: app-logs
+        hostPath:
+          path: /var/log/app-logs
+          type: DirectoryOrCreate

@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: python-flask-app-pod
+spec:
+  containers:
+  - name: app
+    image: python-flask-app:latest
+    imagePullPolicy: Never
+    ports:
+    - containerPort: 5000
+    envFrom:
+    - configMapRef:
+        name: python-flask-app-config
+    volumeMounts:
+    - name: logs-volume
+      mountPath: /app/logs
+  volumes:
+  - name: logs-volume
+    emptyDir: {}
