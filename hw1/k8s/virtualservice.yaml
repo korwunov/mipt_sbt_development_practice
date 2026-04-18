@@ -1,0 +1,60 @@
+apiVersion: networking.istio.io/v1
+kind: VirtualService
+metadata:
+  name: python-flask-app-virtualservice
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - python-flask-app-gateway
+  http:
+  - match:
+    - uri:
+        exact: "/"
+    route:
+    - destination:
+        host: python-flask-app-service
+        port:
+          number: 80
+  - match:
+    - uri:
+        exact: "/status"
+    route:
+    - destination:
+        host: python-flask-app-service
+        port:
+          number: 80
+  - match:
+    - uri:
+        exact: "/log"
+      method:
+        exact: POST
+    timeout: 1s
+    fault:
+      delay:
+        fixedDelay: 2s
+        percentage:
+          value: 100
+    retries:
+      attempts: 2
+      perTryTimeout: 1s
+    route:
+    - destination:
+        host: python-flask-app-service
+        port:
+          number: 80
+  - match:
+    - uri:
+        prefix: "/logs"
+    route:
+    - destination:
+        host: python-flask-app-service
+        port:
+          number: 80
+  - match:
+    - uri:
+        regex: ".*"  # Все остальные пути
+    directResponse:
+      status: 404
+      body:
+        string: "Not Found"
