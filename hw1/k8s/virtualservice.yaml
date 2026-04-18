@@ -35,9 +35,9 @@ spec:
         fixedDelay: 2s
         percentage:
           value: 100
-    # retries:
-    #   attempts: 2
-    #   perTryTimeout: 1s
+    retries:
+      attempts: 2
+      perTryTimeout: 1s
     route:
     - destination:
         host: python-flask-app-service
