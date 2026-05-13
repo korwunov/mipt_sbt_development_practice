@@ -29,15 +29,16 @@ spec:
         exact: "/log"
       method:
         exact: POST
-    timeout: 1s
-    fault:
-      delay:
-        fixedDelay: 2s
-        percentage:
-          value: 100
-    retries:
-      attempts: 2
-      perTryTimeout: 1s
+    # Закомментил для проверки логирования
+    # timeout: 1s
+    # fault:
+    #   delay:
+    #     fixedDelay: 2s
+    #     percentage:
+    #       value: 100
+    # retries:
+    #   attempts: 2
+    #   perTryTimeout: 1s
     route:
     - destination:
         host: python-flask-app-service

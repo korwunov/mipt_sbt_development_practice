@@ -3,7 +3,11 @@ import os
 import logging
 from logging.handlers import RotatingFileHandler
 
-LOG_FILE_PATH = os.getenv("", "/app/logs/app.log")
+from werkzeug.middleware.dispatcher import DispatcherMiddleware
+from prometheus_client import make_wsgi_app
+from prometheus_flask_exporter import PrometheusMetrics
+
+LOG_FILE_PATH = os.getenv("", "./app/logs/app.log")
 LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
 PORT = int(os.getenv("PORT", 5000))
 GREETING_HEADER = os.getenv("GREETING_HEADER", "Welcome to the custom app")
@@ -18,6 +22,12 @@ handler.setFormatter(formatter)
 
 app.logger.addHandler(handler)
 app.logger.setLevel(getattr(logging, LOG_LEVEL))
+
+app.wsgi_app = DispatcherMiddleware(app.wsgi_app, {
+    '/metrics': make_wsgi_app()
+})
+
+metrics = PrometheusMetrics(app)
 
 
 @app.route("/")
