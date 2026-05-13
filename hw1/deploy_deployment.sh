@@ -51,5 +51,13 @@ echo "Применение DestinationRule..."
 kubectl apply -f k8s/destinationrule.yaml
 echo "DestinationRule создан"
 
+echo "Добавление Prometheus в namespace istio-system"
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.29/samples/addons/prometheus.yaml
+echo "Prometheus добавлен"
+
+echo "Добавление Grafana в namespace istio-system"
+kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.29/samples/addons/grafana.yaml
+echo "Grafana добавлена"
+
 echo "Открытие порта наружу..."
 minikube service istio-ingressgateway -n istio-system
